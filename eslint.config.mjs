@@ -1,3 +1,7 @@
-import { config } from "@remotion/eslint-config-flat";
+import { makeConfig } from "@remotion/eslint-config-flat";
 
-export default config;
+const conf = makeConfig({
+  remotionDir: ["remotion/**"],
+});
+
+export default conf;
