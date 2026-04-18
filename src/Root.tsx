@@ -3,10 +3,54 @@ import { Composition } from "remotion";
 import { HelloWorld, myCompSchema } from "./HelloWorld";
 import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
 import { ProChainPromo } from "./ProChain/ProChainPromo";
+import { ProChainPromoV2 } from "./ProChain/ProChainPromoV2";
+import {
+  arBuyerConfig,
+  arSupplierConfig,
+  enBuyerConfig,
+  enSupplierConfig,
+  totalFrames,
+} from "./ProChain/configs";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="ProChainBuyerEN"
+        component={ProChainPromoV2}
+        durationInFrames={totalFrames(enBuyerConfig)}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ config: enBuyerConfig }}
+      />
+      <Composition
+        id="ProChainSupplierEN"
+        component={ProChainPromoV2}
+        durationInFrames={totalFrames(enSupplierConfig)}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ config: enSupplierConfig }}
+      />
+      <Composition
+        id="ProChainBuyerAR"
+        component={ProChainPromoV2}
+        durationInFrames={totalFrames(arBuyerConfig)}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ config: arBuyerConfig }}
+      />
+      <Composition
+        id="ProChainSupplierAR"
+        component={ProChainPromoV2}
+        durationInFrames={totalFrames(arSupplierConfig)}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ config: arSupplierConfig }}
+      />
       <Composition
         id="ProChainPromo"
         component={ProChainPromo}
