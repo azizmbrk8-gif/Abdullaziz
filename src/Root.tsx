@@ -10,7 +10,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="ProChainPromo"
         component={ProChainPromo}
-        durationInFrames={840}
+        durationInFrames={645}
         fps={30}
         width={1080}
         height={1920}

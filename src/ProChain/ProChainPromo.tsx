@@ -8,372 +8,384 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { ProChainLogo, ProChainWordmark } from "./Logo";
+import { ProChainLogo } from "./Logo";
 import { PhoneFrame } from "./PhoneFrame";
 import { BuyerHome } from "./mockups/BuyerHome";
 import { Orders } from "./mockups/Orders";
 import { SupplierDashboard } from "./mockups/SupplierDashboard";
 import { MyProducts } from "./mockups/MyProducts";
+import {
+  AMBER,
+  ConfettiBurst,
+  CREAM,
+  Flash,
+  FloatingEmojis,
+  KineticText,
+  NAVY,
+  ORANGE,
+  ORANGE_DEEP,
+  ORANGE_HOT,
+  RadialRays,
+  Ripple,
+  SLATE,
+  useShake,
+  usePulse,
+} from "./helpers";
 
-const ORANGE = "#FF7A1A";
-const ORANGE_DEEP = "#F05A00";
-const CREAM = "#FFF9F2";
-const NAVY = "#0F172A";
-
-// --- Scene 1: Logo reveal (0 - 45 frames) ---
-const LogoReveal: React.FC = () => {
+// ===============================================
+// SCENE 1 — HOOK SLAM (0-45f, 1.5s)
+// ===============================================
+const Scene1Hook: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width } = useVideoConfig();
 
-  const scale = spring({ frame, fps, config: { damping: 12, mass: 0.6 } });
-  const wordmarkOpacity = interpolate(frame, [20, 35], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const wordmarkY = interpolate(frame, [20, 38], [20, 0], {
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
+  const bgScale = spring({ frame, fps, config: { damping: 14 } });
+  const textSlam = spring({ frame: frame - 6, fps, config: { damping: 10, mass: 0.4 } });
+  const textScale = interpolate(textSlam, [0, 1], [2.2, 1]);
+
+  const emojiP = spring({ frame: frame - 20, fps, config: { damping: 9 } });
 
   return (
     <AbsoluteFill
       style={{
-        background: `radial-gradient(circle at 50% 40%, #FFF5E6 0%, ${CREAM} 60%, #FFE8D0 100%)`,
+        background: `radial-gradient(circle at 50% 40%, #FFCB6B 0%, ${ORANGE} 45%, ${ORANGE_DEEP} 100%)`,
         alignItems: "center",
         justifyContent: "center",
-        flexDirection: "column",
-        gap: 30,
+        padding: 60,
       }}
     >
-      <div style={{ transform: `scale(${scale})` }}>
-        <ProChainLogo size={360} />
+      <div style={{ transform: `scale(${bgScale})`, opacity: bgScale }}>
+        <RadialRays color="#FFFFFF" opacity={0.12} speed={0.6} />
       </div>
+
+      <FloatingEmojis emojis={["☕", "🍔", "🥐", "🍕", "🧀", "🥛"]} count={14} opacity={0.22} />
+
       <div
         style={{
-          opacity: wordmarkOpacity,
-          transform: `translateY(${wordmarkY}px)`,
+          transform: `scale(${textScale})`,
+          opacity: textSlam,
+          textAlign: "center",
+          filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.25))",
+          position: "relative",
+          zIndex: 5,
         }}
       >
-        <ProChainWordmark color={NAVY} size={80} />
+        <div
+          style={{
+            fontSize: 48,
+            fontWeight: 900,
+            color: NAVY,
+            background: "white",
+            padding: "8px 28px",
+            borderRadius: 999,
+            display: "inline-block",
+            marginBottom: 30,
+            letterSpacing: 2,
+          }}
+        >
+          SHOP OWNERS 👀
+        </div>
+        <div
+          style={{
+            fontSize: 160,
+            fontWeight: 900,
+            color: "white",
+            letterSpacing: -6,
+            lineHeight: 0.95,
+            WebkitTextStroke: "3px rgba(0,0,0,0.15)",
+          }}
+        >
+          STOP
+          <br />
+          WASTING
+          <br />
+          <span style={{ color: "#FFE5A3" }}>TIME</span>
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: 140,
+          fontSize: 120,
+          opacity: emojiP,
+          transform: `scale(${emojiP}) rotate(${(1 - emojiP) * -30}deg)`,
+        }}
+      >
+        ⏱️💸
       </div>
     </AbsoluteFill>
   );
 };
 
-// --- Scene 2: Hook (0 - 90 frames) ---
-const Hook: React.FC = () => {
+// ===============================================
+// SCENE 2 — PAIN POINTS (0-75f, 2.5s)
+// ===============================================
+const PainCard: React.FC<{ delay: number; emoji: string; title: string; sub: string }> = ({
+  delay,
+  emoji,
+  title,
+  sub,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = spring({ frame: frame - delay, fps, config: { damping: 10, mass: 0.5 } });
+  const shake = useShake(delay + 12, 8, 6);
+  return (
+    <div
+      style={{
+        opacity: p,
+        transform: `translateX(${(1 - p) * -100}px) scale(${0.85 + p * 0.15}) translate(${shake.x}px, ${shake.y}px)`,
+        background: "white",
+        borderRadius: 32,
+        padding: "28px 36px",
+        display: "flex",
+        alignItems: "center",
+        gap: 28,
+        boxShadow: "0 20px 50px rgba(0,0,0,0.3)",
+        width: "100%",
+      }}
+    >
+      <div
+        style={{
+          fontSize: 100,
+          width: 130,
+          height: 130,
+          borderRadius: 28,
+          background: `linear-gradient(135deg, ${ORANGE_HOT}, ${ORANGE_DEEP})`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {emoji}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 54, fontWeight: 900, color: NAVY, letterSpacing: -1 }}>{title}</div>
+        <div style={{ fontSize: 28, fontWeight: 600, color: "#64748B", marginTop: 4 }}>{sub}</div>
+      </div>
+    </div>
+  );
+};
+
+const Scene2Pain: React.FC = () => {
+  const frame = useCurrentFrame();
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: `linear-gradient(180deg, #1E293B 0%, #0F172A 100%)`,
+        padding: 60,
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 26,
+      }}
+    >
+      <FloatingEmojis emojis={["❌", "😩", "💔"]} count={8} opacity={0.08} />
+      <div
+        style={{
+          fontSize: 68,
+          fontWeight: 900,
+          color: "white",
+          textAlign: "center",
+          letterSpacing: -2,
+          marginBottom: 10,
+          opacity: Math.min(1, frame / 10),
+        }}
+      >
+        The <span style={{ color: "#FB923C" }}>nightmare</span>:
+      </div>
+      <PainCard delay={8} emoji="🤥" title="Shady suppliers" sub="Who can you trust?" />
+      <PainCard delay={22} emoji="💸" title="Overpaying" sub="Every single order" />
+      <PainCard delay={36} emoji="⏰" title="Hours wasted" sub="On calls & chasing" />
+    </AbsoluteFill>
+  );
+};
+
+// ===============================================
+// SCENE 3 — SOLUTION SLAM (0-60f, 2s)
+// ===============================================
+const Scene3Solution: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const t1 = spring({ frame: frame - 5, fps, config: { damping: 14 } });
-  const t2 = spring({ frame: frame - 25, fps, config: { damping: 14 } });
-  const t3 = spring({ frame: frame - 45, fps, config: { damping: 14 } });
+  const logoSlam = spring({ frame: frame - 3, fps, config: { damping: 9, mass: 0.3 } });
+  const logoScale = interpolate(logoSlam, [0, 1], [3, 1]);
+  const shake = useShake(12, 14, 14);
+
+  const textP = spring({ frame: frame - 20, fps, config: { damping: 12 } });
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: `linear-gradient(135deg, ${ORANGE} 0%, ${ORANGE_DEEP} 100%)`,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <Flash start={0} duration={5} />
+      <RadialRays color="#FFFFFF" opacity={0.15} speed={0.8} />
+
+      <div
+        style={{
+          transform: `scale(${logoScale}) translate(${shake.x}px, ${shake.y}px)`,
+          opacity: logoSlam,
+          filter: "drop-shadow(0 20px 40px rgba(0,0,0,0.3))",
+        }}
+      >
+        <ProChainLogo size={420} />
+      </div>
+
+      <div
+        style={{
+          opacity: textP,
+          transform: `translateY(${(1 - textP) * 40}px)`,
+          fontSize: 180,
+          fontWeight: 900,
+          color: "white",
+          letterSpacing: -6,
+          marginTop: 20,
+          lineHeight: 1,
+          textShadow: "0 8px 20px rgba(0,0,0,0.25)",
+        }}
+      >
+        ProChain
+      </div>
+      <div
+        style={{
+          opacity: textP,
+          fontSize: 40,
+          fontWeight: 700,
+          color: "white",
+          marginTop: 14,
+          letterSpacing: -0.5,
+          textAlign: "center",
+        }}
+      >
+        The <span style={{ background: "white", color: ORANGE_DEEP, padding: "4px 16px", borderRadius: 12 }}>
+          #1
+        </span>{" "}
+        food marketplace
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// ===============================================
+// SCENE 4 — BUYER DEMO (0-135f, 4.5s)
+// ===============================================
+const Scene4Buyer: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const titleP = spring({ frame, fps, config: { damping: 14 } });
+
+  // Phone 1: enters, scrolls
+  const phone1Y = interpolate(
+    frame,
+    [0, 25],
+    [1500, 0],
+    { extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) },
+  );
+  const phone1Tilt = interpolate(frame, [0, 25, 55, 70], [20, 0, 0, -10], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const phone1Opacity = interpolate(frame, [55, 80], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const scroll1 = interpolate(frame, [10, 55], [0, 420], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.inOut(Easing.cubic),
+  });
+
+  // Phone 2
+  const phone2Y = interpolate(frame, [55, 80], [1500, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const phone2Tilt = interpolate(frame, [55, 80, 115, 130], [20, 0, 0, -10], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const phone2Opacity = interpolate(frame, [55, 80, 115, 130], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   return (
     <AbsoluteFill
       style={{
         background: `linear-gradient(180deg, ${CREAM} 0%, #FFE5C8 100%)`,
         alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        padding: 60,
-        textAlign: "center",
+        paddingTop: 90,
       }}
     >
-      <div style={{ display: "flex", gap: 40, marginBottom: 60 }}>
-        <div
-          style={{
-            transform: `scale(${t1}) rotate(${(1 - t1) * -20}deg)`,
-            fontSize: 180,
-          }}
-        >
-          ☕
-        </div>
-        <div
-          style={{
-            transform: `scale(${t2}) rotate(${(1 - t2) * 20}deg)`,
-            fontSize: 180,
-          }}
-        >
-          🍽
-        </div>
-      </div>
-      <div
-        style={{
-          opacity: t3,
-          transform: `translateY(${(1 - t3) * 30}px)`,
-          fontSize: 82,
-          fontWeight: 900,
-          color: NAVY,
-          lineHeight: 1.05,
-          letterSpacing: -1.5,
-          maxWidth: 900,
-        }}
-      >
-        Running a <span style={{ color: ORANGE_DEEP }}>café</span>
-        <br />
-        or <span style={{ color: ORANGE_DEEP }}>restaurant?</span>
-      </div>
-    </AbsoluteFill>
-  );
-};
+      <FloatingEmojis emojis={["🛒", "📦", "✨"]} count={10} opacity={0.12} />
 
-// --- Scene 3: Problem (0 - 90 frames) ---
-const ProblemRow: React.FC<{ delay: number; icon: string; text: string; accent: string }> = ({
-  delay,
-  icon,
-  text,
-  accent,
-}) => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const p = spring({ frame: frame - delay, fps, config: { damping: 15 } });
-  return (
-    <div
-      style={{
-        opacity: p,
-        transform: `translateX(${(1 - p) * -80}px)`,
-        display: "flex",
-        alignItems: "center",
-        gap: 28,
-        background: "white",
-        borderRadius: 28,
-        padding: "26px 34px",
-        boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
-        width: "100%",
-      }}
-    >
-      <div
-        style={{
-          width: 110,
-          height: 110,
-          borderRadius: 24,
-          background: accent,
-          color: "white",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 56,
-          flexShrink: 0,
-        }}
-      >
-        {icon}
-      </div>
-      <div style={{ fontSize: 44, fontWeight: 800, color: NAVY, lineHeight: 1.15 }}>{text}</div>
-    </div>
-  );
-};
-
-const Problem: React.FC = () => {
-  const frame = useCurrentFrame();
-  const titleP = spring({ frame, fps: 30, config: { damping: 15 } });
-  return (
-    <AbsoluteFill
-      style={{
-        background: `linear-gradient(180deg, #1E293B 0%, #0F172A 100%)`,
-        padding: 70,
-        justifyContent: "center",
-        flexDirection: "column",
-        gap: 28,
-      }}
-    >
       <div
         style={{
           opacity: titleP,
-          fontSize: 56,
+          transform: `translateY(${(1 - titleP) * 30}px)`,
+          fontSize: 42,
           fontWeight: 900,
           color: "white",
-          textAlign: "center",
-          marginBottom: 10,
-          letterSpacing: -1,
-        }}
-      >
-        The struggle is <span style={{ color: "#FB923C" }}>real</span>
-      </div>
-      <ProblemRow delay={15} icon="🤝" text="Can't trust suppliers" accent="#EF4444" />
-      <ProblemRow delay={30} icon="💸" text="Overpaying everywhere" accent="#F59E0B" />
-      <ProblemRow delay={45} icon="⏰" text="Wasting hours daily" accent="#8B5CF6" />
-    </AbsoluteFill>
-  );
-};
-
-// --- Scene 4: Solution reveal with phone ---
-const SolutionIntro: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const phoneSlide = spring({ frame, fps, config: { damping: 14 } });
-  const phoneX = interpolate(phoneSlide, [0, 1], [900, 0]);
-  const titleP = spring({ frame: frame - 25, fps, config: { damping: 15 } });
-
-  const scroll = interpolate(frame, [60, 130], [0, 380], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: `linear-gradient(135deg, ${ORANGE} 0%, ${ORANGE_DEEP} 100%)`,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: -120,
-          left: -120,
-          width: 500,
-          height: 500,
+          background: NAVY,
+          padding: "10px 28px",
           borderRadius: 999,
-          background: "rgba(255,255,255,0.08)",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: -200,
-          right: -100,
-          width: 700,
-          height: 700,
-          borderRadius: 999,
-          background: "rgba(255,255,255,0.06)",
-        }}
-      />
-
-      <div
-        style={{
-          position: "absolute",
-          top: 120,
-          left: 0,
-          right: 0,
-          textAlign: "center",
-          opacity: titleP,
-          transform: `translateY(${(1 - titleP) * 30}px)`,
+          letterSpacing: 2,
+          marginBottom: 14,
         }}
       >
-        <div style={{ fontSize: 44, fontWeight: 700, color: "rgba(255,255,255,0.9)" }}>Meet</div>
-        <div
-          style={{
-            fontSize: 148,
-            fontWeight: 900,
-            color: "white",
-            letterSpacing: -4,
-            lineHeight: 1,
-            marginTop: 8,
-          }}
-        >
-          ProChain
-        </div>
-        <div
-          style={{
-            fontSize: 34,
-            fontWeight: 600,
-            color: "white",
-            marginTop: 14,
-            opacity: 0.95,
-          }}
-        >
-          The marketplace for food businesses
-        </div>
+        FOR BUYERS
       </div>
-
       <div
         style={{
-          position: "absolute",
-          bottom: -180,
-          left: "50%",
-          transform: `translateX(calc(-50% + ${phoneX}px))`,
-        }}
-      >
-        <PhoneFrame width={620}>
-          <BuyerHome scrollY={scroll} />
-        </PhoneFrame>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-// --- Scene 5: Phone carousel - Buyer views ---
-const BuyerCarousel: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const titleP = spring({ frame, fps, config: { damping: 15 } });
-
-  const phoneOpacity1 = interpolate(frame, [0, 15, 60, 75], [0, 1, 1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const phoneOpacity2 = interpolate(frame, [55, 75, 130], [0, 1, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const phoneX1 = interpolate(frame, [0, 75], [0, -400], {
-    extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
-  });
-  const phoneX2 = interpolate(frame, [55, 75], [400, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: `linear-gradient(180deg, ${CREAM} 0%, #FFE8D0 100%)`,
-        alignItems: "center",
-        paddingTop: 100,
-      }}
-    >
-      <div
-        style={{
-          opacity: titleP,
-          transform: `translateY(${(1 - titleP) * 20}px)`,
-          fontSize: 60,
+          fontSize: 72,
           fontWeight: 900,
           color: NAVY,
+          letterSpacing: -2,
+          opacity: titleP,
           textAlign: "center",
-          letterSpacing: -1,
+          lineHeight: 1,
           marginBottom: 30,
         }}
       >
-        For <span style={{ color: ORANGE_DEEP }}>buyers</span>
-      </div>
-      <div
-        style={{
-          fontSize: 30,
-          fontWeight: 600,
-          color: "#475569",
-          marginBottom: 40,
-          opacity: titleP,
-        }}
-      >
-        Track every order, in one place
+        Everything
+        <br />
+        <span style={{ color: ORANGE_DEEP }}>in one app</span>
       </div>
 
-      <div style={{ position: "relative", width: 600, height: 1160 }}>
+      <div style={{ position: "relative", width: 620, height: 1280, perspective: 1800 }}>
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: 0,
-            opacity: phoneOpacity1,
-            transform: `translateX(${phoneX1}px)`,
+            left: 10,
+            transform: `translateY(${phone1Y}px) rotateY(${phone1Tilt}deg)`,
+            opacity: phone1Opacity,
+            transformOrigin: "center center",
           }}
         >
           <PhoneFrame width={600}>
-            <BuyerHome scrollY={480} />
+            <BuyerHome scrollY={scroll1} />
           </PhoneFrame>
+          <Ripple x={300} y={800} start={30} color={ORANGE} />
+          <Ripple x={300} y={800} start={30} color="white" />
         </div>
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: 0,
-            opacity: phoneOpacity2,
-            transform: `translateX(${phoneX2}px)`,
+            left: 10,
+            transform: `translateY(${phone2Y}px) rotateY(${phone2Tilt}deg)`,
+            opacity: phone2Opacity,
+            transformOrigin: "center center",
           }}
         >
           <PhoneFrame width={600}>
@@ -385,87 +397,111 @@ const BuyerCarousel: React.FC = () => {
   );
 };
 
-// --- Scene 6: Supplier side ---
-const SupplierScene: React.FC = () => {
+// ===============================================
+// SCENE 5 — SUPPLIER DEMO (0-120f, 4s)
+// ===============================================
+const Scene5Supplier: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const titleP = spring({ frame, fps, config: { damping: 15 } });
+  const titleP = spring({ frame, fps, config: { damping: 14 } });
 
-  const phoneOpacity1 = interpolate(frame, [5, 20, 60, 75], [0, 1, 1, 0], {
+  const phone1Y = interpolate(frame, [0, 25], [1500, 0], {
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const phone1Tilt = interpolate(frame, [0, 25, 50, 65], [-20, 0, 0, 10], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const phoneOpacity2 = interpolate(frame, [55, 75, 130], [0, 1, 1], {
+  const phone1Opacity = interpolate(frame, [50, 70], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
-  const phoneX1 = interpolate(frame, [5, 75], [0, 400], {
-    extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
-  });
-  const phoneX2 = interpolate(frame, [55, 75], [-400, 0], {
+  const phone2Y = interpolate(frame, [50, 70], [1500, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.inOut(Easing.cubic),
+    easing: Easing.out(Easing.cubic),
+  });
+  const phone2Tilt = interpolate(frame, [50, 70, 100, 115], [-20, 0, 0, 10], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const phone2Opacity = interpolate(frame, [50, 70, 100, 118], [0, 1, 1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
   });
 
+  // Floating dollar signs
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(180deg, #0F172A 0%, #1E293B 100%)`,
+        background: `linear-gradient(180deg, ${NAVY} 0%, ${SLATE} 100%)`,
         alignItems: "center",
-        paddingTop: 100,
+        paddingTop: 90,
       }}
     >
+      <RadialRays color={ORANGE} opacity={0.1} speed={-0.3} />
+      <FloatingEmojis emojis={["💰", "📈", "✅"]} count={12} opacity={0.18} />
+
       <div
         style={{
           opacity: titleP,
-          transform: `translateY(${(1 - titleP) * 20}px)`,
-          fontSize: 60,
+          transform: `translateY(${(1 - titleP) * 30}px)`,
+          fontSize: 42,
+          fontWeight: 900,
+          color: NAVY,
+          background: "white",
+          padding: "10px 28px",
+          borderRadius: 999,
+          letterSpacing: 2,
+          marginBottom: 14,
+        }}
+      >
+        FOR SUPPLIERS
+      </div>
+      <div
+        style={{
+          fontSize: 72,
           fontWeight: 900,
           color: "white",
+          letterSpacing: -2,
+          opacity: titleP,
           textAlign: "center",
-          letterSpacing: -1,
+          lineHeight: 1,
           marginBottom: 30,
         }}
       >
-        For <span style={{ color: "#FB923C" }}>suppliers</span>
-      </div>
-      <div
-        style={{
-          fontSize: 30,
-          fontWeight: 600,
-          color: "rgba(255,255,255,0.75)",
-          marginBottom: 40,
-          opacity: titleP,
-        }}
-      >
-        Reach more shops, sell more
+        Sell more.
+        <br />
+        <span style={{ color: "#FB923C" }}>Stress less.</span>
       </div>
 
-      <div style={{ position: "relative", width: 600, height: 1160 }}>
+      <div style={{ position: "relative", width: 620, height: 1280, perspective: 1800 }}>
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: 0,
-            opacity: phoneOpacity1,
-            transform: `translateX(${phoneX1}px)`,
+            left: 10,
+            transform: `translateY(${phone1Y}px) rotateY(${phone1Tilt}deg)`,
+            opacity: phone1Opacity,
+            transformOrigin: "center center",
           }}
         >
           <PhoneFrame width={600}>
             <SupplierDashboard />
           </PhoneFrame>
+          <Ripple x={300} y={700} start={30} color={ORANGE} />
         </div>
         <div
           style={{
             position: "absolute",
             top: 0,
-            left: 0,
-            opacity: phoneOpacity2,
-            transform: `translateX(${phoneX2}px)`,
+            left: 10,
+            transform: `translateY(${phone2Y}px) rotateY(${phone2Tilt}deg)`,
+            opacity: phone2Opacity,
+            transformOrigin: "center center",
           }}
         >
           <PhoneFrame width={600}>
@@ -477,201 +513,293 @@ const SupplierScene: React.FC = () => {
   );
 };
 
-// --- Scene 7: Value burst ---
-const ValueBurst: React.FC = () => {
+// ===============================================
+// SCENE 6 — VALUE BURST (0-75f, 2.5s)
+// ===============================================
+const ValueChip: React.FC<{ delay: number; icon: string; text: string; tilt?: number }> = ({
+  delay,
+  icon,
+  text,
+  tilt = 0,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = spring({ frame: frame - delay, fps, config: { damping: 8, mass: 0.4 } });
+  const scale = interpolate(p, [0, 1], [0, 1]);
+  return (
+    <div
+      style={{
+        transform: `scale(${scale}) rotate(${tilt}deg)`,
+        background: "white",
+        borderRadius: 28,
+        padding: "22px 36px",
+        display: "flex",
+        alignItems: "center",
+        gap: 18,
+        boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+        border: `4px solid ${ORANGE_DEEP}`,
+      }}
+    >
+      <div style={{ fontSize: 68 }}>{icon}</div>
+      <div style={{ fontSize: 52, fontWeight: 900, color: NAVY, letterSpacing: -1 }}>{text}</div>
+    </div>
+  );
+};
+
+const Scene6Value: React.FC = () => {
+  return (
+    <AbsoluteFill
+      style={{
+        background: `linear-gradient(135deg, ${ORANGE} 0%, ${ORANGE_HOT} 50%, ${ORANGE_DEEP} 100%)`,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        gap: 24,
+        padding: 50,
+      }}
+    >
+      <RadialRays color="white" opacity={0.14} speed={0.5} />
+      <ConfettiBurst start={5} count={50} />
+
+      <div
+        style={{
+          fontSize: 88,
+          fontWeight: 900,
+          color: "white",
+          letterSpacing: -2,
+          textAlign: "center",
+          marginBottom: 10,
+          textShadow: "0 8px 20px rgba(0,0,0,0.25)",
+        }}
+      >
+        <KineticText text="WHY" size={80} color="white" stagger={3} />
+        <KineticText
+          text="ProChain?"
+          delay={12}
+          size={100}
+          color="#FFE5A3"
+          stagger={3}
+        />
+      </div>
+
+      <ValueChip delay={18} icon="✅" text="Trusted suppliers" tilt={-3} />
+      <ValueChip delay={28} icon="💰" text="Save money" tilt={2} />
+      <ValueChip delay={38} icon="⚡" text="Save hours" tilt={-2} />
+      <ValueChip delay={48} icon="📱" text="One simple app" tilt={3} />
+    </AbsoluteFill>
+  );
+};
+
+// ===============================================
+// SCENE 7 — CTA (0-135f, 4.5s)
+// ===============================================
+const Scene7CTA: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const bullets = [
-    { icon: "✓", text: "Trusted suppliers" },
-    { icon: "💰", text: "Save money" },
-    { icon: "⚡", text: "Save time" },
-    { icon: "📱", text: "One simple app" },
-  ];
+  const pulse = usePulse(6, 0.04);
+
+  const freeP = spring({ frame: frame - 4, fps, config: { damping: 8, mass: 0.3 } });
+  const freeScale = interpolate(freeP, [0, 1], [3, 1]);
+  const shake = useShake(16, 12, 10);
+
+  const stampP = spring({ frame: frame - 22, fps, config: { damping: 7, mass: 0.3 } });
+  const stampRotate = interpolate(stampP, [0, 1], [-40, -8]);
+
+  const urlP = spring({ frame: frame - 40, fps, config: { damping: 12 } });
+  const arrowP = interpolate(
+    frame,
+    [60, 70, 80, 90, 100, 110],
+    [0, 10, 0, 10, 0, 10],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+
+  const logoP = spring({ frame, fps, config: { damping: 14 } });
 
   return (
     <AbsoluteFill
       style={{
-        background: `linear-gradient(135deg, ${ORANGE} 0%, ${ORANGE_DEEP} 100%)`,
+        background: `radial-gradient(circle at 50% 50%, #FFECC7 0%, ${CREAM} 60%, #FFDDAE 100%)`,
         alignItems: "center",
         justifyContent: "center",
-        padding: 80,
         flexDirection: "column",
-        gap: 28,
+        padding: 50,
       }}
     >
+      <RadialRays color={ORANGE} opacity={0.12} speed={0.4} />
+      <ConfettiBurst start={50} count={100} />
+
       <div
         style={{
-          fontSize: 52,
-          fontWeight: 900,
-          color: "white",
-          textAlign: "center",
-          letterSpacing: -1,
+          transform: `scale(${logoP * 0.8})`,
+          opacity: logoP,
           marginBottom: 20,
         }}
       >
-        Why ProChain?
+        <ProChainLogo size={180} />
       </div>
-      {bullets.map((b, i) => {
-        const p = spring({ frame: frame - i * 10, fps, config: { damping: 14 } });
-        return (
-          <div
-            key={b.text}
-            style={{
-              opacity: p,
-              transform: `translateX(${(1 - p) * 60}px)`,
-              background: "rgba(255,255,255,0.18)",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255,255,255,0.35)",
-              borderRadius: 28,
-              padding: "26px 44px",
-              display: "flex",
-              alignItems: "center",
-              gap: 24,
-              width: "100%",
-            }}
-          >
-            <div
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 20,
-                background: "white",
-                color: ORANGE_DEEP,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 40,
-                fontWeight: 900,
-                flexShrink: 0,
-              }}
-            >
-              {b.icon}
-            </div>
-            <div style={{ fontSize: 46, fontWeight: 800, color: "white" }}>{b.text}</div>
-          </div>
-        );
-      })}
-    </AbsoluteFill>
-  );
-};
 
-// --- Scene 8: CTA ---
-const CTA: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const scale = spring({ frame, fps, config: { damping: 12, mass: 0.5 } });
-  const titleP = spring({ frame: frame - 10, fps, config: { damping: 14 } });
-  const badgeP = spring({ frame: frame - 30, fps, config: { damping: 10 } });
-  const urlP = spring({ frame: frame - 45, fps, config: { damping: 14 } });
-
-  const pulse = 1 + Math.sin(frame / 6) * 0.04;
-
-  return (
-    <AbsoluteFill
-      style={{
-        background: `radial-gradient(circle at 50% 50%, #FFF5E6 0%, ${CREAM} 60%)`,
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        padding: 70,
-      }}
-    >
-      <div style={{ transform: `scale(${scale * 0.8})`, marginBottom: 30 }}>
-        <ProChainLogo size={200} />
-      </div>
       <div
         style={{
-          opacity: titleP,
-          transform: `translateY(${(1 - titleP) * 20}px)`,
-          fontSize: 100,
+          fontSize: 54,
           fontWeight: 900,
           color: NAVY,
-          letterSpacing: -3,
-          lineHeight: 1,
+          letterSpacing: -1,
           textAlign: "center",
+          opacity: logoP,
         }}
       >
-        Try it <span style={{ color: ORANGE_DEEP }}>FREE</span>
+        Get it now.
       </div>
+
       <div
         style={{
-          opacity: badgeP,
-          transform: `scale(${badgeP}) rotate(-6deg)`,
-          background: "#EF4444",
-          color: "white",
-          fontSize: 28,
-          fontWeight: 900,
-          padding: "12px 28px",
-          borderRadius: 16,
-          marginTop: 30,
-          boxShadow: "0 10px 30px rgba(239,68,68,0.4)",
+          position: "relative",
+          transform: `scale(${freeScale}) translate(${shake.x}px, ${shake.y}px)`,
+          opacity: freeP,
+          marginTop: 10,
         }}
       >
-        LIMITED TIME
+        <div
+          style={{
+            fontSize: 280,
+            fontWeight: 900,
+            color: ORANGE_DEEP,
+            letterSpacing: -14,
+            lineHeight: 0.9,
+            WebkitTextStroke: "6px " + NAVY,
+            filter: "drop-shadow(0 12px 0 rgba(15,23,42,0.9))",
+          }}
+        >
+          FREE
+        </div>
+        <div
+          style={{
+            position: "absolute",
+            top: -30,
+            right: -50,
+            transform: `rotate(${stampRotate}deg) scale(${stampP})`,
+            background: "#EF4444",
+            color: "white",
+            fontSize: 34,
+            fontWeight: 900,
+            padding: "14px 26px",
+            borderRadius: 16,
+            boxShadow: "0 10px 30px rgba(239,68,68,0.5)",
+            border: "4px dashed white",
+            letterSpacing: 1,
+          }}
+        >
+          LIMITED!
+        </div>
       </div>
+
       <div
         style={{
           opacity: urlP,
-          transform: `translateY(${(1 - urlP) * 20}px) scale(${pulse})`,
-          marginTop: 60,
+          transform: `translateY(${(1 - urlP) * 40}px) scale(${pulse})`,
+          marginTop: 40,
           background: `linear-gradient(135deg, ${ORANGE} 0%, ${ORANGE_DEEP} 100%)`,
-          padding: "28px 60px",
+          padding: "26px 54px",
           borderRadius: 999,
-          boxShadow: "0 20px 50px rgba(240,90,0,0.4)",
-          fontSize: 44,
+          boxShadow: "0 20px 50px rgba(240,90,0,0.5), inset 0 -6px 0 rgba(0,0,0,0.15)",
+          fontSize: 38,
           fontWeight: 900,
           color: "white",
           letterSpacing: -0.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
         }}
       >
         prochainapp.manus.space
+        <span style={{ transform: `translateX(${arrowP}px)`, fontSize: 50 }}>→</span>
       </div>
+
       <div
         style={{
           opacity: urlP,
-          fontSize: 26,
-          fontWeight: 700,
-          color: "#64748B",
-          marginTop: 30,
+          fontSize: 30,
+          fontWeight: 800,
+          color: NAVY,
+          marginTop: 24,
           textAlign: "center",
+          background: "white",
+          padding: "10px 24px",
+          borderRadius: 999,
         }}
       >
-        Download the app today
+        ⬇️ Link in bio
       </div>
     </AbsoluteFill>
   );
 };
 
-// --- Root composition ---
+// ===============================================
+// PROGRESS BAR (always on top)
+// ===============================================
+const ProgressBar: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
+  const progress = frame / durationInFrames;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        height: 8,
+        width: `${progress * 100}%`,
+        background: `linear-gradient(90deg, ${ORANGE}, ${AMBER}, ${ORANGE_DEEP})`,
+        zIndex: 200,
+        boxShadow: "0 0 12px rgba(255,122,26,0.7)",
+      }}
+    />
+  );
+};
+
+// ===============================================
+// ROOT COMPOSITION (20s = 600f @ 30fps)
+// ===============================================
 export const ProChainPromo: React.FC = () => {
   return (
-    <AbsoluteFill style={{ background: CREAM, fontFamily: "system-ui, -apple-system, Segoe UI, Helvetica, Arial" }}>
+    <AbsoluteFill
+      style={{
+        background: CREAM,
+        fontFamily:
+          "system-ui, -apple-system, Segoe UI, Helvetica, Arial, sans-serif",
+      }}
+    >
       <Sequence from={0} durationInFrames={45}>
-        <LogoReveal />
+        <Scene1Hook />
       </Sequence>
-      <Sequence from={45} durationInFrames={90}>
-        <Hook />
+      <Sequence from={45} durationInFrames={75}>
+        <Scene2Pain />
       </Sequence>
-      <Sequence from={135} durationInFrames={90}>
-        <Problem />
+      <Sequence from={120} durationInFrames={60}>
+        <Scene3Solution />
       </Sequence>
-      <Sequence from={225} durationInFrames={135}>
-        <SolutionIntro />
+      <Sequence from={180} durationInFrames={135}>
+        <Scene4Buyer />
       </Sequence>
-      <Sequence from={360} durationInFrames={130}>
-        <BuyerCarousel />
+      <Sequence from={315} durationInFrames={120}>
+        <Scene5Supplier />
       </Sequence>
-      <Sequence from={490} durationInFrames={130}>
-        <SupplierScene />
+      <Sequence from={435} durationInFrames={75}>
+        <Scene6Value />
       </Sequence>
-      <Sequence from={620} durationInFrames={90}>
-        <ValueBurst />
+      <Sequence from={510} durationInFrames={135}>
+        <Scene7CTA />
       </Sequence>
-      <Sequence from={710} durationInFrames={130}>
-        <CTA />
-      </Sequence>
+      <ProgressBar />
+
+      {/* Beat-flash transitions between scenes */}
+      <Flash start={44} duration={4} color="white" />
+      <Flash start={119} duration={5} color="white" />
+      <Flash start={179} duration={4} color="white" />
+      <Flash start={314} duration={4} color={ORANGE} />
+      <Flash start={434} duration={4} color="white" />
+      <Flash start={509} duration={5} color="white" />
     </AbsoluteFill>
   );
 };
