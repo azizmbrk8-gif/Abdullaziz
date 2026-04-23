@@ -27,7 +27,10 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "render:tiktok-music": "remotion render ProChainTikTokWithAudio public/prochain-tiktok-music.mp4 --codec h264 --audio-codec aac --audio-bitrate 128k",
+    "render:tiktok-muted": "remotion render ProChainTikTokMuted public/prochain-tiktok-muted.mp4 --codec h264 --muted",
+    "render:tiktok-all": "npm run render:tiktok-music && npm run render:tiktok-muted"
   },
   "sideEffects": [
     "*.css"
