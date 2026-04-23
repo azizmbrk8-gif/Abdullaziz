@@ -1,4 +1,5 @@
 import React from "react";
+import { loadFont } from "@remotion/fonts";
 import {
   AbsoluteFill,
   Audio,
@@ -11,6 +12,15 @@ import {
   useVideoConfig,
 } from "remotion";
 import { ProChainLogo } from "./Logo";
+
+// ─── Load Tajawal font from local public/fonts/ ──────────────────────────────
+const fontLoads = [
+  loadFont({ family: "Tajawal", url: staticFile("fonts/Tajawal-Regular.ttf"),    weight: "400" }),
+  loadFont({ family: "Tajawal", url: staticFile("fonts/Tajawal-Bold.ttf"),       weight: "700" }),
+  loadFont({ family: "Tajawal", url: staticFile("fonts/Tajawal-ExtraBold.ttf"), weight: "800" }),
+  loadFont({ family: "Tajawal", url: staticFile("fonts/Tajawal-Black.ttf"),     weight: "900" }),
+];
+Promise.all(fontLoads); // fire-and-forget; Remotion blocks render until fonts resolve
 
 // ─── Brand tokens ────────────────────────────────────────────────────────────
 const CREAM = "#FAF5E9";
@@ -921,7 +931,7 @@ export const ProChainTikTok: React.FC<TikTokProps> = ({ enableAudio = true }) =>
                 durationInFrames={40}
                 premountFor={5}
               >
-                <Audio src="https://remotion.media/whoosh.wav" volume={0.5} />
+                <Audio src={staticFile("audio/sfx/whoosh.wav")} volume={0.5} />
               </Sequence>
             ),
           )}
@@ -934,7 +944,7 @@ export const ProChainTikTok: React.FC<TikTokProps> = ({ enableAudio = true }) =>
               durationInFrames={20}
               premountFor={5}
             >
-              <Audio src="https://remotion.media/switch.wav" volume={0.35} />
+              <Audio src={staticFile("audio/sfx/switch.wav")} volume={0.35} />
             </Sequence>
           ))}
 
@@ -946,7 +956,7 @@ export const ProChainTikTok: React.FC<TikTokProps> = ({ enableAudio = true }) =>
               durationInFrames={30}
               premountFor={5}
             >
-              <Audio src="https://remotion.media/ding.wav" volume={0.45} />
+              <Audio src={staticFile("audio/sfx/ding.wav")} volume={0.45} />
             </Sequence>
           ))}
         </>
