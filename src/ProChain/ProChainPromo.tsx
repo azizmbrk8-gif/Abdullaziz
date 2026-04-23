@@ -37,7 +37,7 @@ import {
 // ===============================================
 const Scene1Hook: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width } = useVideoConfig();
+  const { fps } = useVideoConfig();
 
   const bgScale = spring({ frame, fps, config: { damping: 14 } });
   const textSlam = spring({ frame: frame - 6, fps, config: { damping: 10, mass: 0.4 } });
