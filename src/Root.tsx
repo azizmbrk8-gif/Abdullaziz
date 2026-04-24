@@ -5,6 +5,7 @@ import { Logo, myCompSchema2 } from "./HelloWorld/Logo";
 import { ProChainPromo } from "./ProChain/ProChainPromo";
 import { ProChainPromoV2 } from "./ProChain/ProChainPromoV2";
 import { ProChainTikTok } from "./ProChain/ProChainTikTok";
+import { ProChainTikTokV2 } from "./ProChain/ProChainTikTokV2";
 import {
   arBuyerConfig,
   arSupplierConfig,
@@ -59,6 +60,25 @@ export const RemotionRoot: React.FC = () => {
         fps={30}
         width={1080}
         height={1920}
+      />
+      {/* V2 — real logo + app screenshots + vertical wipes */}
+      <Composition
+        id="ProChainTikTokV2WithAudio"
+        component={ProChainTikTokV2}
+        durationInFrames={1200}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ enableAudio: true }}
+      />
+      <Composition
+        id="ProChainTikTokV2Muted"
+        component={ProChainTikTokV2}
+        durationInFrames={1200}
+        fps={30}
+        width={1080}
+        height={1920}
+        defaultProps={{ enableAudio: false }}
       />
       {/* TikTok restaurant owner video — 40s / 1080×1920 */}
       <Composition
